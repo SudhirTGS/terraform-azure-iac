@@ -1,0 +1,6 @@
+# Ignore local state files and secrets
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+*.auto.tfvars
