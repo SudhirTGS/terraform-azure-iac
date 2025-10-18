@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# terraform-azure
-create infra for Azure using terraform
-=======
 # Terraform "Hello, World" example
 
 This folder contains a "Hello, World" example of a [Terraform](https://www.terraform.io/) file on Microsoft Azure.
@@ -155,4 +151,3 @@ This Terraform file create a single server on Microsoft Azure by provisioning th
   terraform destroy
   ```
   
->>>>>>> be9c9b2 (Terraform VNet/Subnet/NIC)

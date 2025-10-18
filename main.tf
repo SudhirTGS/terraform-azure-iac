@@ -6,6 +6,7 @@ provider "azurerm" {
   tenant_id       = var.tenant_id
   client_id       = var.client_id
   client_secret   = var.client_secret
+  
 }
 
 # Use existing Resource Group instead of creating a new one
@@ -42,3 +43,67 @@ resource "azurerm_network_interface" "tfexample" {
   }
 }
 
+resource "azurerm_network_interface" "tfexample_win" {
+  name                = "my-retail-nic-2"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+
+  ip_configuration {
+    name                          = "my-retail-nic-2-ip-config"
+    subnet_id                     = azurerm_subnet.tfexample.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+
+#create a Virtual Machine in subnet
+resource "azurerm_linux_virtual_machine" "tfexample" {
+  name                = "my-retail-vm"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+ #update this size to next size as getting error Please try another size
+  size                = "Standard_B1s"
+  admin_username      = "azureuser"
+  admin_password      = "Azureuser@12345"
+  disable_password_authentication = false
+  network_interface_ids = [
+    azurerm_network_interface.tfexample.id,
+  ]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+}
+
+#create  windows VM in subnet
+resource "azurerm_windows_virtual_machine" "tfexample" {
+  name                = "my-retail-wn-vm"
+  location            = data.azurerm_resource_group.existing.location
+  resource_group_name = data.azurerm_resource_group.existing.name
+  size                = "Standard_B1s"
+  admin_username      = "azureuser"
+  admin_password      = "Azureuser@12345"  
+  network_interface_ids = [
+    azurerm_network_interface.tfexample_win.id,
+  ]
+  computer_name = "retailwinvm"  # <= 15 chars to satisfy Windows hostname limit
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2019-Datacenter"
+    version   = "latest"
+  }
+}
