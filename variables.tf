@@ -18,3 +18,5 @@ variable "client_secret" {
   description = "Service principal client secret"
   sensitive   = true
 }
+
+
